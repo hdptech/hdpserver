@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/hdptech/hdpserver#readme",
   "dependencies": {
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "jsonfile": "^2.2.3"
   }
 }

@@ -1,0 +1,24 @@
+{
+    "name" : "Hdp service", 
+    "description" : "Hdp service description",
+    "functions" : [
+    {
+        "name" : "getDate",
+        "description" : "Get this date please",
+        "inputParameters" : [
+        { 
+            "name" : "zone", 
+            "description" : "timezone", 
+            "default" : "GMT+0"
+        }, 
+        { 
+            "name" : "format", 
+            "description" : "date format", 
+            "default" : "dd-mm-yyyy" 
+        }]
+    },
+    { 
+        "name" : "getCaptcha", 
+        "description" : "Returns captcha image"
+    }]
+}
