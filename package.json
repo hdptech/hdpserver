@@ -1,0 +1,25 @@
+{
+  "name": "hdpserver",
+  "version": "1.0.0",
+  "description": "HDP Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hdptech/hdpserver.git"
+  },
+  "keywords": [
+    "hdp"
+  ],
+  "author": "hdptech",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hdptech/hdpserver/issues"
+  },
+  "homepage": "https://github.com/hdptech/hdpserver#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
