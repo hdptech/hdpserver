@@ -21,7 +21,9 @@
   "homepage": "https://github.com/hdptech/hdpserver#readme",
   "dependencies": {
     "async": "^1.5.2",
+    "body-parser": "^1.15.0",
     "express": "^4.13.4",
-    "jsonfile": "^2.2.3"
+    "jsonfile": "^2.2.3",
+    "request": "^2.71.0"
   }
 }

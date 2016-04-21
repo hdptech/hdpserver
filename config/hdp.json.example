@@ -5,6 +5,8 @@
     {
         "name" : "getDate",
         "description" : "Get this date please",
+        "upstream" : "http://127.0.0.1:3001/heyheyhey",
+        "method" : "get",
         "inputParameters" : [
         { 
             "name" : "zone", 
