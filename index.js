@@ -2,6 +2,8 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var request = require('request');
+var queryString = require('query-string');
+
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -39,17 +41,40 @@ function registerUrlHandlers(hdpJson, callback) {
                 break;
             }
         }
-        
-        if (requestedFunction !== undefined) {            
-            request.get({url:functionStuff.upstream, form: {"test" : 123}},
+                
+        var parameters = [];
+                
+        if (requestedFunction !== undefined) {    
+            if ('inputParameters' in functionStuff) {
+                for (var j = 0; j < functionStuff.inputParameters.length; j++) {
+                    if ('required' in functionStuff.inputParameters[j]) {
+                        var name = functionStuff.inputParameters[j]['name'];
+                        var obj = {};
+                        obj[name] = req.body[name];
+                        parameters.push(obj);
+                    }
+                }
+            } else {
+                console.log('no inout params');
+            }
+            
+            console.log(parameters);
+            var query = queryString.stringify(parameters[0]);
+            
+            console.log('url');
+            console.log(functionStuff.upstream + '?' + query);
+            
+            request.get({url:functionStuff.upstream + '?' + query},
             function(err,httpResponse,body){
+                console.log(err);
+                console.log(body);
             })
             
         } else {
             console.log('No function available');
         }
         
-        res.send('invoke');
+        res.send('finish');
     });
     
     app.get('*', function(req, res) {
@@ -58,5 +83,5 @@ function registerUrlHandlers(hdpJson, callback) {
     
     app.listen(3000, '127.0.0.1');
     
-    callback(null, 'registered');
+    callback(null, '');
 }

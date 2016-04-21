@@ -24,6 +24,7 @@
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "jsonfile": "^2.2.3",
+    "query-string": "^4.1.0",
     "request": "^2.71.0"
   }
 }

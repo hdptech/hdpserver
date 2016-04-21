@@ -5,13 +5,13 @@
     {
         "name" : "getDate",
         "description" : "Get this date please",
-        "upstream" : "http://127.0.0.1:3001/heyheyhey",
+        "upstream" : "http://127.0.0.1:3001/getDate",
         "method" : "get",
         "inputParameters" : [
         { 
-            "name" : "zone", 
-            "description" : "timezone", 
-            "default" : "GMT+0"
+            "name" : "city", 
+            "description" : "timezone",
+            "required" : true
         }, 
         { 
             "name" : "format", 
