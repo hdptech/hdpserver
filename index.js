@@ -4,6 +4,22 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var queryString = require('query-string');
 
+var log4js = require('log4js'); 
+//console log is loaded by default, so you won't normally need to do this 
+//log4js.addAppender('console'); 
+log4js.loadAppender('file');
+//log4js.addAppender(log4js.appenders.console()); 
+log4js.addAppender(log4js.appenders.file('app.log'), 'cheese');
+ 
+var logger = log4js.getLogger('cheese');
+logger.setLevel('TRACE');
+ 
+logger.trace('Entering cheese testing');
+logger.debug('Got cheese.');
+logger.info('Cheese is Gouda.');
+logger.warn('Cheese is quite smelly.');
+logger.error('Cheese is too ripe!');
+logger.fatal('Cheese was breeding ground for listeria.');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -18,7 +34,7 @@ async.waterfall([
     registerUrlHandlers
 ], function (err, result) {
     if (err) throw err;
-    console.log(result);
+    logger.trace(result);
 });
 function getHdpJson(callback) {
     jsonfile.readFile(file, function(err, obj) {
