@@ -28,6 +28,7 @@
     "log4js": "^0.6.35",
     "query-string": "^4.1.0",
     "regex": "^0.1.1",
-    "request": "^2.71.0"
+    "request": "^2.71.0",
+    "unique-random-array": "^1.0.0"
   }
 }

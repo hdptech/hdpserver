@@ -5,6 +5,7 @@ var request = require('request');
 var queryString = require('query-string');
 var Regex = require("regex");
 var escapeStringRegexp = require('escape-string-regexp');
+var uniqueRandomArray = require('unique-random-array');
 
 var sprintf = require("sprintf-js").sprintf;
 
@@ -115,7 +116,6 @@ function registerUrlHandlers(hdpJson, callback) {
                 if (req.method === 'POST') {
                     obj[name] = req.body[name];
                 } else if (req.method === 'GET') {
-                    console.log(req.query);
                     obj[name] = req.query[name];
                 }
                 
@@ -141,9 +141,12 @@ function registerUrlHandlers(hdpJson, callback) {
         }
         logger.trace('querySuffix: ' + querySuffix);
         
-        logger.trace('Going to: ' + functionStuff.upstream + requestedFunction + querySuffix);
+        var randUpstream = uniqueRandomArray(functionStuff.upstreams);
+        var selectedUpstream = randUpstream();
+        
+        logger.trace('Going to: ' + selectedUpstream + requestedFunction + querySuffix);
 
-        sendRequestToTheUpstream(functionStuff.upstream + requestedFunction + querySuffix, req.method, {}, res);
+        sendRequestToTheUpstream(selectedUpstream + requestedFunction + querySuffix, req.method, {}, res);
     });
     
     app.get('*', function(req, res) {
