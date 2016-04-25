@@ -66,12 +66,17 @@ function registerUrlHandlers(hdpJson, callback) {
         var parameters = [];
         if ('inputParameters' in functionStuff) {
             for (var j = 0; j < functionStuff.inputParameters.length; j++) {
-                if ('required' in functionStuff.inputParameters[j]) {
-                    var name = functionStuff.inputParameters[j]['name'];
-                    var obj = {};
-                    obj[name] = req.body[name];
-                    parameters.push(obj);
+                var name = functionStuff.inputParameters[j]['name'];
+                var obj = {};
+                obj[name] = req.body[name];
+                
+                if ('required' in functionStuff.inputParameters[j] && typeof obj[name] === 'undefined') {
+                    logger.trace('Required parameter "' + name +  '" not passed');
+                    res.end(getErrorResponse('Parameter "' + name + '" is required'));
+                    return;
                 }
+                
+                parameters.push(obj);
             }
         }
         
