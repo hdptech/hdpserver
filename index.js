@@ -4,22 +4,13 @@ var bodyParser = require('body-parser');
 var request = require('request');
 var queryString = require('query-string');
 
+var sprintf = require("sprintf-js").sprintf;
+
 var log4js = require('log4js'); 
-//console log is loaded by default, so you won't normally need to do this 
-//log4js.addAppender('console'); 
 log4js.loadAppender('file');
-//log4js.addAppender(log4js.appenders.console()); 
-log4js.addAppender(log4js.appenders.file('app.log'), 'cheese');
- 
-var logger = log4js.getLogger('cheese');
+log4js.addAppender(log4js.appenders.file('app.log'), 'main');
+var logger = log4js.getLogger('main');
 logger.setLevel('TRACE');
- 
-logger.trace('Entering cheese testing');
-logger.debug('Got cheese.');
-logger.info('Cheese is Gouda.');
-logger.warn('Cheese is quite smelly.');
-logger.error('Cheese is too ripe!');
-logger.fatal('Cheese was breeding ground for listeria.');
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -34,8 +25,9 @@ async.waterfall([
     registerUrlHandlers
 ], function (err, result) {
     if (err) throw err;
-    logger.trace(result);
+    logger.trace('Application has been succesfully started');
 });
+
 function getHdpJson(callback) {
     jsonfile.readFile(file, function(err, obj) {
         if (err) return callback(err, null);
@@ -49,48 +41,53 @@ function registerUrlHandlers(hdpJson, callback) {
 
     app.post('/invoke', urlencodedParser, function (req, res) {
         var requestedFunction = req.body.function;
+        logger.trace('Function "' + requestedFunction + '" has been requested');
         var functionStuff;
+        var functionFound = 0;
         
         for (var i = 0; i < hdpJson['functions'].length; i++) {
-            if (requestedFunction == hdpJson['functions'][i]['name']) {
+            if (requestedFunction === hdpJson['functions'][i]['name']) {
                 functionStuff = hdpJson['functions'][i];
+                functionFound = 1;
                 break;
             }
         }
-                
-        var parameters = [];
-                
-        if (requestedFunction !== undefined) {    
-            if ('inputParameters' in functionStuff) {
-                for (var j = 0; j < functionStuff.inputParameters.length; j++) {
-                    if ('required' in functionStuff.inputParameters[j]) {
-                        var name = functionStuff.inputParameters[j]['name'];
-                        var obj = {};
-                        obj[name] = req.body[name];
-                        parameters.push(obj);
-                    }
-                }
-            } else {
-                console.log('no inout params');
-            }
-            
-            console.log(parameters);
-            var query = queryString.stringify(parameters[0]);
-            
-            console.log('url');
-            console.log(functionStuff.upstream + '?' + query);
-            
-            request.get({url:functionStuff.upstream + '?' + query},
-            function(err,httpResponse,body){
-                console.log(err);
-                console.log(body);
-            })
-            
-        } else {
-            console.log('No function available');
+        
+        if (functionFound === 0) {
+            logger.trace('Requested function not found in the upstream service config');
+            res.end(getErrorResponse('Function not found'));
+            return;
         }
         
-        res.send('finish');
+        var parameters = [];
+        if ('inputParameters' in functionStuff) {
+            for (var j = 0; j < functionStuff.inputParameters.length; j++) {
+                if ('required' in functionStuff.inputParameters[j]) {
+                    var name = functionStuff.inputParameters[j]['name'];
+                    var obj = {};
+                    obj[name] = req.body[name];
+                    parameters.push(obj);
+                }
+            }
+        } else {
+            logger.trace('Application has been succesfully started');
+        }
+
+        var query = queryString.stringify(parameters[0]);
+
+        request.get({url:functionStuff.upstream + '?' + query},
+            function(err, httpResponse, body) {
+                if (err) {
+                    logger.error(err);
+                    res.end(getErrorResponse('Service unavailable'));
+                    return;
+                } else {
+                    logger.trace('httpResponse.statusCode: ' + httpResponse.statusCode);
+                    logger.trace('body: ' + body);
+                    res.end(getSuccessResponse(body));
+                    return;
+                }
+            });
     });
     
     app.get('*', function(req, res) {
@@ -100,4 +97,12 @@ function registerUrlHandlers(hdpJson, callback) {
     app.listen(3000, '127.0.0.1');
     
     callback(null, '');
+}
+
+function getSuccessResponse(message) {
+    return JSON.stringify({"output" : message});
+}
+
+function getErrorResponse(error) {
+    return JSON.stringify({"error" : error});
 }
