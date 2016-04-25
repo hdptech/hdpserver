@@ -21,6 +21,8 @@
     },
     { 
         "name" : "getCaptcha", 
-        "description" : "Returns captcha image"
+        "description" : "Returns captcha image",
+        "upstream" : "http://127.0.0.1:3001/getCaptcha",
+        "method" : "get"
     }]
 }

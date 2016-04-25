@@ -36,7 +36,11 @@ function getHdpJson(callback) {
 }
 function registerUrlHandlers(hdpJson, callback) {
     app.get('/start', function (req, res) {
-        res.send(hdpJson);
+        var resultJson = hdpJson;
+        for (var i = 0; i < resultJson.functions.length; i++) {
+            delete resultJson.functions[i]['upstream'];
+        }
+        res.send(resultJson);
     });
 
     app.post('/invoke', urlencodedParser, function (req, res) {
@@ -96,7 +100,7 @@ function registerUrlHandlers(hdpJson, callback) {
                     res.end(getSuccessResponse(body));
                     return;
                 }
-            });
+        });
     });
     
     app.get('*', function(req, res) {
