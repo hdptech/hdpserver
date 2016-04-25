@@ -69,13 +69,21 @@ function registerUrlHandlers(hdpJson, callback) {
                     parameters.push(obj);
                 }
             }
-        } else {
-            logger.trace('Application has been succesfully started');
         }
+        
+        var querySuffix;
+        
+        if (Object.keys(parameters).length === 0) {
+            querySuffix = '';
+        } else {
+            querySuffix = '?';
+            for (var k = 0; k < parameters.length; k++) {
+                querySuffix += queryString.stringify(parameters[k]);
+            }
+        }
+        logger.trace('querySuffix: ' + querySuffix);
 
-        var query = queryString.stringify(parameters[0]);
-
-        request.get({url:functionStuff.upstream + '?' + query},
+        request.get({url:functionStuff.upstream + querySuffix},
             function(err, httpResponse, body) {
                 if (err) {
                     logger.error(err);
@@ -83,7 +91,8 @@ function registerUrlHandlers(hdpJson, callback) {
                     return;
                 } else {
                     logger.trace('httpResponse.statusCode: ' + httpResponse.statusCode);
-                    logger.trace('body: ' + body);
+                    logger.trace('body:');
+                    logger.trace(body);
                     res.end(getSuccessResponse(body));
                     return;
                 }
