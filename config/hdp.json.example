@@ -10,13 +10,8 @@
         "inputParameters" : [
         { 
             "name" : "city", 
-            "description" : "timezone",
+            "description" : "City you like",
             "required" : true
-        }, 
-        { 
-            "name" : "format", 
-            "description" : "date format", 
-            "default" : "dd-mm-yyyy" 
         }]
     },
     { 
