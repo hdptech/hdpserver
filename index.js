@@ -140,8 +140,12 @@ function registerUrlHandlers(hdpJson, callback) {
             }
         }
         logger.trace('querySuffix: ' + querySuffix);
-        
-        var randUpstream = uniqueRandomArray(functionStuff.upstreams);
+
+        var upstreamsArr = functionStuff.upstreams;
+        if (req.query.deprecated === '1' && typeof functionStuff.deprecatedUpstreams !== 'undefined') {
+            upstreamsArr = functionStuff.deprecatedUpstreams;
+        }
+        var randUpstream = uniqueRandomArray(upstreamsArr);
         var selectedUpstream = randUpstream();
         
         logger.trace('Going to: ' + selectedUpstream + requestedFunction + querySuffix);

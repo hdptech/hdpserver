@@ -6,6 +6,7 @@
         "name" : "getDate",
         "description" : "Get this date please",
         "upstreams" : ["http://127.0.0.1:3001/"],
+        "deprecatedUpstreams" : ["http://127.0.0.1:3002/"],
         "method" : "GET",
         "inputParameters" : [
         { 
