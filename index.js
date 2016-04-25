@@ -93,9 +93,11 @@ function registerUrlHandlers(hdpJson, callback) {
             //if (requestedFunction === hdpJson['functions'][i]['name']) {
             //if (regex.test(requestedFunction)) {
             if (equal === 1 && requestedFunctionArray.length === currentFunctionArray.length) {
-                functionStuff = hdpJson['functions'][i];
-                functionFound = 1;
-                break;
+                if (hdpJson['functions'][i]['method'] === req.method) {
+                    functionStuff = hdpJson['functions'][i];
+                    functionFound = 1;
+                    break;
+                }
             }
         }
         
