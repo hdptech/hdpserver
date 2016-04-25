@@ -45,8 +45,20 @@ function registerUrlHandlers(hdpJson, callback) {
         res.send(resultJson);
     });
 
-    app.post('/invoke', urlencodedParser, function (req, res) {
-        var requestedFunction = req.body.function;
+    app.all('/invoke', urlencodedParser, function (req, res) {
+        
+        if (req.method !== 'GET' && req.method !== 'POST') {
+            res.end(getErrorResponse('GET and POST are only allowed'));
+            return;
+        }
+        
+        var requestedFunction;
+        if (req.method === 'GET') {
+            requestedFunction = req.query['function'];
+        } else if (req.method === 'POST') {
+            reqeustedFunction = req.body.function;
+        }
+        
         logger.trace('Function "' + requestedFunction + '" has been requested');
         var functionStuff;
         var functionFound = 0;
@@ -98,7 +110,12 @@ function registerUrlHandlers(hdpJson, callback) {
             for (var j = 0; j < functionStuff.inputParameters.length; j++) {
                 var name = functionStuff.inputParameters[j]['name'];
                 var obj = {};
-                obj[name] = req.body[name];
+                if (req.method === 'POST') {
+                    obj[name] = req.body[name];
+                } else if (req.method === 'GET') {
+                    console.log(req.query);
+                    obj[name] = req.query[name];
+                }
                 
                 if ('required' in functionStuff.inputParameters[j] && typeof obj[name] === 'undefined') {
                     logger.trace('Required parameter "' + name +  '" not passed');
@@ -124,7 +141,22 @@ function registerUrlHandlers(hdpJson, callback) {
         
         logger.trace('Going to: ' + functionStuff.upstream + requestedFunction + querySuffix);
 
-        request.get({url:functionStuff.upstream + requestedFunction + querySuffix},
+        sendRequestToTheUpstream(functionStuff.upstream + requestedFunction + querySuffix, req.method, {}, res);
+    });
+    
+    app.get('*', function(req, res) {
+        res.redirect('/start');
+    });
+    
+    app.listen(3000, '127.0.0.1');
+    
+    callback(null, '');
+}
+
+function sendRequestToTheUpstream(url, method, formParams, res) {
+    
+    if (method === 'GET') {
+        request.get({url:url},
             function(err, httpResponse, body) {
                 if (err) {
                     logger.error(err);
@@ -138,16 +170,24 @@ function registerUrlHandlers(hdpJson, callback) {
                     return;
                 }
         });
-    });
-    
-    app.get('*', function(req, res) {
-        res.redirect('/start');
-    });
-    
-    app.listen(3000, '127.0.0.1');
-    
-    callback(null, '');
+    } else if (method === 'POST') {
+        request.post(url,
+            function(err, httpResponse, body) {
+                if (err) {
+                    logger.error(err);
+                    res.end(getErrorResponse('Service unavailable'));
+                    return;
+                } else {
+                    logger.trace('httpResponse.statusCode: ' + httpResponse.statusCode);
+                    logger.trace('body:');
+                    logger.trace(body);
+                    res.end(getSuccessResponse(body));
+                    return;
+                }
+        }).form(formParams);
+    }
 }
+
 
 function getSuccessResponse(message) {
     return JSON.stringify({"output" : message});
