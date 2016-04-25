@@ -3,6 +3,8 @@ var app = express();
 var bodyParser = require('body-parser');
 var request = require('request');
 var queryString = require('query-string');
+var Regex = require("regex");
+var escapeStringRegexp = require('escape-string-regexp');
 
 var sprintf = require("sprintf-js").sprintf;
 
@@ -50,7 +52,35 @@ function registerUrlHandlers(hdpJson, callback) {
         var functionFound = 0;
         
         for (var i = 0; i < hdpJson['functions'].length; i++) {
-            if (requestedFunction === hdpJson['functions'][i]['name']) {
+            
+            var requestedFunctionArray = requestedFunction.split('/');
+            var currentFunctionArray = hdpJson['functions'][i]['name'].split('/');
+            
+            var equal = 1;
+            
+            var minLength = Math.min(currentFunctionArray.length, requestedFunctionArray.length);
+            
+            logger.trace('minLength: ' + minLength);
+            
+            for (var q = 0; q < minLength; q++) {
+                
+                logger.trace(requestedFunctionArray[q]);
+                logger.trace(currentFunctionArray[q]);
+                
+                if (currentFunctionArray[q].startsWith(':')) {
+                    logger.trace('Starts with :');
+                    continue;
+                }
+                if (requestedFunctionArray[q] !== currentFunctionArray[q]) {
+                    equal = 0;
+                    break;
+                }
+            }
+            
+            
+            //if (requestedFunction === hdpJson['functions'][i]['name']) {
+            //if (regex.test(requestedFunction)) {
+            if (equal === 1 && requestedFunctionArray.length === currentFunctionArray.length) {
                 functionStuff = hdpJson['functions'][i];
                 functionFound = 1;
                 break;
@@ -91,8 +121,10 @@ function registerUrlHandlers(hdpJson, callback) {
             }
         }
         logger.trace('querySuffix: ' + querySuffix);
+        
+        logger.trace('Going to: ' + functionStuff.upstream + requestedFunction + querySuffix);
 
-        request.get({url:functionStuff.upstream + querySuffix},
+        request.get({url:functionStuff.upstream + requestedFunction + querySuffix},
             function(err, httpResponse, body) {
                 if (err) {
                     logger.error(err);

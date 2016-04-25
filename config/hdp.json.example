@@ -5,7 +5,7 @@
     {
         "name" : "getDate",
         "description" : "Get this date please",
-        "upstream" : "http://127.0.0.1:3001/getDate",
+        "upstream" : "http://127.0.0.1:3001/",
         "method" : "get",
         "inputParameters" : [
         { 
@@ -22,7 +22,13 @@
     { 
         "name" : "getCaptcha", 
         "description" : "Returns captcha image",
-        "upstream" : "http://127.0.0.1:3001/getCaptcha",
+        "upstream" : "http://127.0.0.1:3001/",
+        "method" : "get"
+    },
+    { 
+        "name" : "withParam/:param/:more",
+        "description" : "Returns with params",
+        "upstream" : "http://127.0.0.1:3001/",
         "method" : "get"
     }]
 }
