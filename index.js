@@ -8,6 +8,7 @@ var escapeStringRegexp = require('escape-string-regexp');
 var uniqueRandomArray = require('unique-random-array');
 
 var Cacheman = require('cacheman');
+var inArray = require('in-array');
 var cache = new Cacheman();
 
 var sprintf = require("sprintf-js").sprintf;
@@ -125,6 +126,12 @@ function registerUrlHandlers(hdpJson, callback) {
                 if ('required' in functionStuff.inputParameters[j] && typeof obj[name] === 'undefined') {
                     logger.trace('Required parameter "' + name +  '" not passed');
                     res.end(getErrorResponse('Parameter "' + name + '" is required'));
+                    return;
+                }
+                
+                if ('in' in functionStuff.inputParameters[j] && !inArray(functionStuff.inputParameters[j]['in'], obj[name])) {
+                    logger.trace('Parameter "' + name +  '" not passed in validation');
+                    res.end(getErrorResponse('Parameter "' + name + '" should be in specific list'));
                     return;
                 }
                 

@@ -12,7 +12,8 @@
         { 
             "name" : "city", 
             "description" : "City you like",
-            "required" : true
+            "required" : true,
+            "in" : ["Moscow", "Sochi"]
         }]
     },
     { 

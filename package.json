@@ -25,6 +25,7 @@
     "cacheman": "^2.2.1",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
+    "in-array": "^0.1.2",
     "jsonfile": "^2.2.3",
     "log4js": "^0.6.35",
     "query-string": "^4.1.0",
