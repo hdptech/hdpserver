@@ -35,3 +35,5 @@ $ curl 'http://127.0.0.1:3000/invoke?function=getDate&city=Moscow'
 $ curl http://127.0.0.1:3000/invoke?function=getCaptcha
 $ curl http://127.0.0.1:3000/invoke?function=withParam/foo/bar
 ```
+
+## Configuration
