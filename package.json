@@ -1,6 +1,6 @@
 {
   "name": "hdpserver",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "HDP Server",
   "main": "index.js",
   "scripts": {
@@ -22,6 +22,7 @@
   "dependencies": {
     "async": "^1.5.2",
     "body-parser": "^1.15.0",
+    "cacheman": "^2.2.1",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
     "jsonfile": "^2.2.3",

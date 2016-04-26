@@ -7,6 +7,9 @@ var Regex = require("regex");
 var escapeStringRegexp = require('escape-string-regexp');
 var uniqueRandomArray = require('unique-random-array');
 
+var Cacheman = require('cacheman');
+var cache = new Cacheman();
+
 var sprintf = require("sprintf-js").sprintf;
 
 var log4js = require('log4js'); 
@@ -150,7 +153,7 @@ function registerUrlHandlers(hdpJson, callback) {
         
         logger.trace('Going to: ' + selectedUpstream + requestedFunction + querySuffix);
 
-        sendRequestToTheUpstream(selectedUpstream + requestedFunction + querySuffix, req.method, {}, res);
+        sendRequestToTheUpstream(selectedUpstream + requestedFunction + querySuffix, req.method, {}, res, functionStuff.cacheTime);
     });
     
     app.get('*', function(req, res) {
@@ -162,23 +165,27 @@ function registerUrlHandlers(hdpJson, callback) {
     callback(null, '');
 }
 
-function sendRequestToTheUpstream(url, method, formParams, res) {
+function sendRequestToTheUpstream(url, method, formParams, res, cacheTime) {
     
     if (method === 'GET') {
-        request.get({url:url},
-            function(err, httpResponse, body) {
-                if (err) {
-                    logger.error(err);
-                    res.end(getErrorResponse('Service unavailable'));
+        logger.trace('Request method is GET');
+        if (cacheTime > 0) {
+            cache.get(url, function (err, value) {
+                if (err) throw err;
+                if (typeof value !== 'undefined') {
+                    logger.trace('Found in cache');
+                    res.end(getSuccessResponse(value));
                     return;
                 } else {
-                    logger.trace('httpResponse.statusCode: ' + httpResponse.statusCode);
-                    logger.trace('body:');
-                    logger.trace(body);
-                    res.end(getSuccessResponse(body));
+                    sendGetRequest(url, res, cacheTime);
                     return;
                 }
-        });
+              });
+        } else {
+            sendGetRequest(url, res, cacheTime);
+            return;
+        }
+        
     } else if (method === 'POST') {
         request.post(url,
             function(err, httpResponse, body) {
@@ -195,6 +202,28 @@ function sendRequestToTheUpstream(url, method, formParams, res) {
                 }
         }).form(formParams);
     }
+}
+
+function sendGetRequest(url, res, cacheTime) {
+    logger.trace('Url is not in cache');
+    request.get({url:url},
+        function(err, httpResponse, body) {
+            if (err) {
+                logger.error(err);
+                res.end(getErrorResponse('Service unavailable'));
+                return;
+            } else {
+                logger.trace('httpResponse.statusCode: ' + httpResponse.statusCode);
+                logger.trace('body:');
+                logger.trace(body);
+                // key will expire in 60 seconds 
+                cache.set(url, body, cacheTime, function (err, value) {
+                  if (err) throw err;
+                });
+                res.end(getSuccessResponse(body));
+                return;
+            }
+    });
 }
 
 

@@ -18,7 +18,8 @@
     { 
         "name" : "getCaptcha", 
         "description" : "Returns captcha image",
-        "upstreams" : ["http://127.0.0.1:3001/", "http://127.0.0.1:3002/"],
+        "upstreams" : ["http://127.0.0.1:3001/"],
+        "cacheTime" : 60,
         "method" : "GET"
     },
     { 
