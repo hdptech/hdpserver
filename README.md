@@ -3,6 +3,23 @@
 Application that serves all requests going from HDP clien apps
 to a specific HDP server application.
 
+## What for?
+
+HDP Server is an entry point before your service or group of services.
+It allows you to bring SOAP ideas without XML overhead, but with a whole new bunch
+of stuff like load balancing, caching, validating data and so on.
+You deploy your services. Then you deploy HDP server application before them.
+You provide a list of available functions to this HDP server entry point.
+This is your service for the rest of the world.
+Everybody will peck into this entry point.
+Entry point receives function a client want to address to and parameters (optional).
+HDP server can validate function (is it available), input parameters, grab a response
+from cache (if it is GET).
+HDP server let's you have a balancing stuff - you can provide different upstreams
+and entry point will choose a random one to pass a request. It also lets you
+have a backward compability - you can deploy your old API somewhere and specify
+deprecated upstreams list to route "old" clients there.
+
 ## Installation 
 
 1) Clone this project:
