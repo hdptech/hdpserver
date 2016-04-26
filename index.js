@@ -23,7 +23,7 @@ var jsonfile = require('jsonfile');
 var util = require('util');
 var async = require('async');
 
-var file = './config/hdp.json.example';
+var file = './config/hdp.json';
 
 async.waterfall([
     getHdpJson,

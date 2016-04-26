@@ -13,14 +13,22 @@ git clone https://github.com/hdptech/hdpserver
 
 2) Install Node.JS and npm
 
-3) Install dependencies:
+3) Copy config example:
+
+```
+cp config/hdp.json.example config/hdp.json
+```
+
+4) Fill `config/hdp.json` with your service functions.
+
+5) Install dependencies:
 
 ```
 cd hdpserver
 npm install
 ```
 
-4) Launch:
+6) Launch:
 
 ```
 node index.js
