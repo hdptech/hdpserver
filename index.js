@@ -11,8 +11,6 @@ var Cacheman = require('cacheman');
 var inArray = require('in-array');
 var cache = new Cacheman();
 
-var sprintf = require("sprintf-js").sprintf;
-
 var log4js = require('log4js'); 
 log4js.loadAppender('file');
 log4js.addAppender(log4js.appenders.file('app.log'), 'main');
