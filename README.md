@@ -192,3 +192,14 @@ requesting `/measure` once more to change weights.
 
 You can use several plugins like `measureLoadAverage`, `measureMemoryUsage` etc to
 implement desired logic.
+
+List of algos:
+
+- loadAverageLess
+- memoryUsageLess
+- cpuUsageLess
+- networkTrafficLess
+- diskIOLess
+- swapIOLess
+
+You can combine them or even assing a weight to every plugin in this list to work.
