@@ -75,8 +75,9 @@ Example
     {
         "name" : "getDate",
         "description" : "Get this date please",
-        "upstreams" : ["http://127.0.0.1:3001/"],
+        "upstreams" : ["http://127.0.0.1:3001/", "http://127.0.0.1:3003"],
         "deprecatedUpstreams" : ["http://127.0.0.1:3002/"],
+        "loadBalancing" : "roundRobin",
         "method" : "GET",
         "inputParameters" : [
         { 
@@ -117,6 +118,8 @@ current request. On each request HDP server will pick a random upstream and
 pass a request to it.
 - `deprecatedUpstreams` - Optional array that could handle requests for deprecated
 API. It could help to cope with backward compability.
+- `loadBalancing` - Optional. Defines load balancing algo which will be used to route
+requests between different defined upstreams. Detailed info below.
 - `method` - Request method. GET and POST are only supported by HDP protocol
 - `inputParameters` - Optional array of objects. Each object describes single
 input parameter. More details below.
@@ -150,3 +153,42 @@ by a client - it will break the request workflow with an error.
 in array provided by validation rule.
 - `url` - Optional URL validation. Validates that the attribute value is
 a valid URL.
+
+## Load balancing
+
+Available options:
+
+- roundRobin
+- weightedRoundRobin
+- upstreamResponseTime
+- leastConnections
+- upstreamMeasure
+
+
+Load balancing could be set to handle incoming requests for one function between
+different upstreams. `roundRobin` option is set by default means that this algo
+will be used to route requests. `upstreamResponseTime` and `leastConnections` don't
+require any more configuration to be set because these indicators will be tracked
+automatically. For `weightedRoundRobin` you have to put weights for upstreams:
+
+```
+"functions" : [
+    {
+        "upstreams" : ["http://127.0.0.1:3001/", "http://127.0.0.1:3003"],
+        "loadBalancing" : "weightedRoundRobin",
+        "loadBalancingWeights" : [0.3, 0.7],
+    },
+```
+
+`upstreamMeasure` is a custom measure tool that allows you to grab info from
+all upstreams to define the load balancing stuff on the fly. For example, you may
+want to route most of your requests to an upstream with the lowest LA (load average).
+
+For the `upstreamMeasure` setting this proxy will expect to grab info about each
+upstream using a specific URL: `/measure` and expecting one letter to be assigned: `7.3`.
+
+Then proxy will handle this stuff like weighted round robin for some time before
+requesting `/measure` once more to change weights.
+
+You can use several plugins like `measureLoadAverage`, `measureMemoryUsage` etc to
+implement desired logic.
